@@ -1,5 +1,5 @@
 plugins {
-    id 'java'
+    id "java"
 }
 
 repositories {
@@ -8,13 +8,29 @@ repositories {
 
 dependencies {
     implementation("org.apache.commons:commons-configuration2:2.12.0")
-    implementation 'commons-beanutils:commons-beanutils:1.9.4'
-    implementation 'org.yaml:snakeyaml:2.0'
+    implementation "commons-beanutils:commons-beanutils:1.9.4"
+    implementation "org.yaml:snakeyaml:2.0"
+    implementation "ch.qos.logback:logback-classic:1.5.18"
 
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
+    compileOnly "org.projectlombok:lombok:1.18.38"
+    annotationProcessor "org.projectlombok:lombok:1.18.38"
+
+    testImplementation platform("org.junit:junit-bom:5.10.0")
+    testImplementation "org.junit.jupiter:junit-jupiter"
 }
 
 test {
     useJUnitPlatform()
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'com.felixkroemer.DropCatcher'
+        )
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

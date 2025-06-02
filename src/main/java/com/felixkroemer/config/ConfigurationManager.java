@@ -15,6 +15,9 @@ import java.nio.file.Paths;
 
 public class ConfigurationManager {
 
+    public static final String INPUT_DIRECTORY = "inputDir";
+    public static final String OUTPUT_DIRECTORY = "outputDir";
+
     private static final String CONFIG_FILENAME = "config.yml";
 
     private Configuration config;
