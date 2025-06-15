@@ -4,6 +4,7 @@ import com.felixkroemer.FileHandler;
 import com.felixkroemer.config.ConfigurationManager;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.nio.file.*;
 
@@ -16,6 +17,7 @@ public class Watch {
     private final WatchService watcher;
     private final FileHandler fileHandler;
 
+    @Inject
     public Watch(ConfigurationManager configurationManager, FileHandler fileHandler) {
         this.configurationManager = configurationManager;
         this.fileHandler = fileHandler;

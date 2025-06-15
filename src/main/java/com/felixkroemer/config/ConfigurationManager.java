@@ -7,6 +7,7 @@ import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,6 +24,7 @@ public class ConfigurationManager {
     private Configuration config;
     private FileBasedConfigurationBuilder<YAMLConfiguration> builder;
 
+    @Inject
     public ConfigurationManager() {
         try {
             initializeConfiguration();

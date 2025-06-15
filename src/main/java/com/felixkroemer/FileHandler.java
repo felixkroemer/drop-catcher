@@ -3,6 +3,7 @@ package com.felixkroemer;
 import com.felixkroemer.config.ConfigurationManager;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,6 +22,7 @@ public class FileHandler {
 
     private final ConfigurationManager configurationManager;
 
+    @Inject
     public FileHandler(ConfigurationManager configurationManager) {
         this.configurationManager = configurationManager;
     }

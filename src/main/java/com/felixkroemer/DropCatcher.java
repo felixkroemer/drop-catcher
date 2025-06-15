@@ -1,13 +1,13 @@
 package com.felixkroemer;
 
-import com.felixkroemer.config.ConfigurationManager;
 import com.felixkroemer.watch.Watch;
 
 public class DropCatcher {
+
+    private static final AppComponent appComponent = DaggerAppComponent.create();
+
     public static void main(String[] args) {
-        ConfigurationManager configurationManager = new ConfigurationManager();
-        FileHandler fileHandler = new FileHandler(configurationManager);
-        Watch watch = new Watch(configurationManager, fileHandler);
+        Watch watch = appComponent.getWatch();
         watch.watch();
     }
 }
