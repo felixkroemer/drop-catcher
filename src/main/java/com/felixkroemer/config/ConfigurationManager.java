@@ -18,6 +18,8 @@ public class ConfigurationManager {
 
     public static final String INPUT_DIRECTORY = "inputDir";
     public static final String OUTPUT_DIRECTORY = "outputDir";
+    public static final String OAI_KEY = "oaiKey";
+    public static final String LLM_MODEL = "llmModel";
 
     private static final String CONFIG_FILENAME = "config.yml";
 

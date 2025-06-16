@@ -14,6 +14,9 @@ dependencies {
 
     implementation 'com.google.dagger:dagger:2.56.2'
 
+    implementation "com.github.librepdf:openpdf:2.2.0"
+    implementation("com.openai:openai-java:2.7.0")
+
     compileOnly "org.projectlombok:lombok:1.18.38"
 
     annotationProcessor "org.projectlombok:lombok:1.18.38"
