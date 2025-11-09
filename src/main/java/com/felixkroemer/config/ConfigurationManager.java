@@ -2,7 +2,7 @@ package com.felixkroemer.config;
 
 import org.apache.commons.configuration2.CompositeConfiguration;
 import org.apache.commons.configuration2.Configuration;
-import org.apache.commons.configuration2.YAMLConfiguration;
+import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.ex.ConfigurationException;
@@ -21,10 +21,10 @@ public class ConfigurationManager {
     public static final String OAI_KEY = "oaiKey";
     public static final String LLM_MODEL = "llmModel";
 
-    private static final String CONFIG_FILENAME = "config.yml";
+    private static final String CONFIG_FILENAME = "application.properties";
 
     private Configuration config;
-    private FileBasedConfigurationBuilder<YAMLConfiguration> builder;
+    private FileBasedConfigurationBuilder<PropertiesConfiguration> builder;
 
     @Inject
     public ConfigurationManager() {
@@ -53,9 +53,8 @@ public class ConfigurationManager {
     private void initializeConfiguration() throws ConfigurationException, IOException {
         Parameters params = new Parameters();
 
-        FileBasedConfigurationBuilder<YAMLConfiguration> builderDefaults = new FileBasedConfigurationBuilder<>(YAMLConfiguration.class).configure(params.properties().setURL(getClass().getClassLoader().getResource(CONFIG_FILENAME)));
-
-        builder = new FileBasedConfigurationBuilder<>(YAMLConfiguration.class).configure(params.fileBased().setFile(getConfigFile()));
+        FileBasedConfigurationBuilder<PropertiesConfiguration> builderDefaults = new FileBasedConfigurationBuilder<>(PropertiesConfiguration.class).configure(params.fileBased().setURL(getClass().getClassLoader().getResource(CONFIG_FILENAME)));
+        builder = new FileBasedConfigurationBuilder<>(PropertiesConfiguration.class).configure(params.fileBased().setFile(getConfigFile()));
 
         CompositeConfiguration cc = new CompositeConfiguration();
         cc.addConfiguration(builder.getConfiguration());
