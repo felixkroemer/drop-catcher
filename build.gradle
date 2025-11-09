@@ -7,23 +7,23 @@ repositories {
 }
 
 dependencies {
-    implementation("org.apache.commons:commons-configuration2:2.12.0")
-    implementation "commons-beanutils:commons-beanutils:1.9.4"
-    implementation "org.yaml:snakeyaml:2.0"
-    implementation "ch.qos.logback:logback-classic:1.5.18"
+    implementation("org.apache.commons:commons-configuration2:2.12.+")
+    implementation "commons-beanutils:commons-beanutils:1.9.+"
+    implementation "org.yaml:snakeyaml:2.+"
+    implementation "ch.qos.logback:logback-classic:1.5.+"
 
-    implementation 'com.google.dagger:dagger:2.56.2'
+    implementation 'com.google.dagger:dagger:2.56.+'
 
-    implementation "com.github.librepdf:openpdf:2.2.0"
-    implementation("com.openai:openai-java:2.7.0")
+    implementation "com.github.librepdf:openpdf:2.2.+"
+    implementation("com.openai:openai-java:2.7.+")
 
-    compileOnly "org.projectlombok:lombok:1.18.38"
+    compileOnly "org.projectlombok:lombok:1.18.+"
 
-    annotationProcessor "org.projectlombok:lombok:1.18.38"
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.56.2'
+    annotationProcessor "org.projectlombok:lombok:1.18.+"
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.56.+'
 
-    testImplementation platform("org.junit:junit-bom:5.10.0")
-    testImplementation "org.junit.jupiter:junit-jupiter"
+    testImplementation platform("org.junit:junit-bom:5.10.+")
+    testImplementation "org.junit.jupiter:junit-jupiter:6.0.+"
 }
 
 test {
