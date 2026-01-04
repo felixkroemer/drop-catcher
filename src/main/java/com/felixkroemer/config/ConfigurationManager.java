@@ -63,6 +63,18 @@ public class ConfigurationManager {
         config = cc;
     }
 
+    public Path getPath(String key) {
+        String rawPath = config.getString(key);
+        if (rawPath == null) {
+            return null;
+        }
+        if (rawPath.startsWith("~" + File.separator) || rawPath.equals("~")) {
+            return Paths.get(System.getProperty("user.home") + rawPath.substring(1))
+                    .toAbsolutePath().normalize();
+        }
+        return Paths.get(rawPath).toAbsolutePath().normalize();
+    }
+
     public String getString(String key) {
         return config.getString(key);
     }

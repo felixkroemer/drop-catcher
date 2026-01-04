@@ -34,7 +34,6 @@ public class OAIService {
                 Make sure to include all relevant information, such as the date, if available.
                 Do not add a file extension.
                 Return only the filename, nothing else.
-                Content: [INSERT YOUR CONTENT HERE]
                 """;
     }
 

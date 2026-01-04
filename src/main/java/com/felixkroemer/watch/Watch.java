@@ -29,7 +29,7 @@ public class Watch {
     }
 
     public void watch() {
-        Path inputDir = Paths.get(configurationManager.getString(INPUT_DIRECTORY));
+        Path inputDir = configurationManager.getPath(INPUT_DIRECTORY);
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             log.info("Shutdown signal received, stopping watcher...");
