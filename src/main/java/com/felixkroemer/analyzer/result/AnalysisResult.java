@@ -1,5 +1,3 @@
 package com.felixkroemer.analyzer.result;
 
-public interface AnalysisResult {
-  String getAnalyzedName();
-}
+public sealed interface AnalysisResult permits AnalysisSuccess, AnalysisFailure {}

@@ -1,6 +1,7 @@
 package com.felixkroemer;
 
 import com.felixkroemer.dagger.AppComponent;
+import com.felixkroemer.dagger.DaggerAppComponent;
 import com.felixkroemer.watch.Watch;
 
 public class DropCatcher {

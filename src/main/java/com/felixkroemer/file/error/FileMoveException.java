@@ -7,5 +7,4 @@ public class FileMoveException extends FileHandlingFailedException {
   public FileMoveException(String message, Throwable e) {
     super(ErrorCode.FILE_MOVE_FAILED, message, e);
   }
-
 }

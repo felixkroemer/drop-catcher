@@ -9,12 +9,12 @@ public class FileHandlingFailedException extends BaseException {
     super(errorCode, message, e);
   }
 
-  public FileHandlingFailedException(String message, String param1, Throwable e) {
+  public FileHandlingFailedException(String message, Object param1, Throwable e) {
     super(ErrorCode.FILE_HANDLING_FAILED, message, param1, e);
   }
 
   public FileHandlingFailedException(
-      ErrorCode errorCode, String message, String param1, Throwable e) {
+      ErrorCode errorCode, String message, Object param1, Throwable e) {
     super(errorCode, message, param1, e);
   }
 }

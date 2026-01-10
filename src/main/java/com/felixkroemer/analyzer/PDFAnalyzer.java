@@ -1,7 +1,8 @@
 package com.felixkroemer.analyzer;
 
 import com.felixkroemer.analyzer.ai.OAIService;
-import com.felixkroemer.analyzer.result.PDFAnalysisResult;
+import com.felixkroemer.analyzer.result.AnalysisResult;
+import com.felixkroemer.analyzer.result.PDFAnalysisSuccess;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.parser.PdfTextExtractor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +14,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 
 @Slf4j
-public class PDFAnalyzer implements FileAnalyzer<PDFAnalysisResult> {
+public class PDFAnalyzer implements FileAnalyzer {
 
   private final OAIService oaiService;
 
@@ -22,13 +23,13 @@ public class PDFAnalyzer implements FileAnalyzer<PDFAnalysisResult> {
     this.oaiService = oaiService;
   }
 
-  public PDFAnalysisResult analyze(File f) {
+  public AnalysisResult analyze(File f) {
     try (var is = new FileInputStream(f)) {
       PdfReader reader = new PdfReader(is);
       var analyzableContent = getContentForNameAnalysis(reader);
       var analyzedFileName = oaiService.analyzeFileName(analyzableContent);
       log.info("Analyzed file name for file {}: {}", f.getAbsolutePath(), analyzedFileName);
-      return new PDFAnalysisResult(
+      return new PDFAnalysisSuccess(
           f.getAbsolutePath(),
           f.getName(),
           f.getTotalSpace(),

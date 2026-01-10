@@ -2,14 +2,14 @@ package com.felixkroemer.analyzer.result;
 
 import java.time.LocalDateTime;
 
-public record PDFAnalysisResult(
+public record PDFAnalysisSuccess(
     String filePath,
     String fileName,
     long fileSize,
     LocalDateTime analyzedAt,
     int pageCount,
     String analyzedName)
-    implements AnalysisResult {
+    implements AnalysisSuccess {
 
   @Override
   public String getAnalyzedName() {
