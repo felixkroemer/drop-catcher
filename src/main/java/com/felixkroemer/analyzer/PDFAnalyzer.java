@@ -15,27 +15,33 @@ import java.time.LocalDateTime;
 @Slf4j
 public class PDFAnalyzer implements FileAnalyzer<PDFAnalysisResult> {
 
-    private final OAIService oaiService;
+  private final OAIService oaiService;
 
-    @Inject
-    public PDFAnalyzer(OAIService oaiService) {
-        this.oaiService = oaiService;
-    }
+  @Inject
+  public PDFAnalyzer(OAIService oaiService) {
+    this.oaiService = oaiService;
+  }
 
-    public PDFAnalysisResult analyze(File f) {
-        try (var is = new FileInputStream(f)) {
-            PdfReader reader = new PdfReader(is);
-            var analyzableContent = getContentForNameAnalysis(reader);
-            var analyzedFileName = oaiService.analyzeFileName(analyzableContent);
-            log.info("Analyzed file name for file {}: {}", f.getAbsolutePath(), analyzedFileName);
-            return new PDFAnalysisResult(f.getAbsolutePath(), f.getName(), f.getTotalSpace(), LocalDateTime.now(), reader.getNumberOfPages(), analyzedFileName);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to analyze pdf file: " + f.getAbsolutePath(), e);
-        }
+  public PDFAnalysisResult analyze(File f) {
+    try (var is = new FileInputStream(f)) {
+      PdfReader reader = new PdfReader(is);
+      var analyzableContent = getContentForNameAnalysis(reader);
+      var analyzedFileName = oaiService.analyzeFileName(analyzableContent);
+      log.info("Analyzed file name for file {}: {}", f.getAbsolutePath(), analyzedFileName);
+      return new PDFAnalysisResult(
+          f.getAbsolutePath(),
+          f.getName(),
+          f.getTotalSpace(),
+          LocalDateTime.now(),
+          reader.getNumberOfPages(),
+          analyzedFileName);
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to analyze pdf file: " + f.getAbsolutePath(), e);
     }
+  }
 
-    private String getContentForNameAnalysis(PdfReader reader) throws IOException {
-        PdfTextExtractor pdfTextExtractor = new PdfTextExtractor(reader);
-        return pdfTextExtractor.getTextFromPage(1);
-    }
+  private String getContentForNameAnalysis(PdfReader reader) throws IOException {
+    PdfTextExtractor pdfTextExtractor = new PdfTextExtractor(reader);
+    return pdfTextExtractor.getTextFromPage(1);
+  }
 }
