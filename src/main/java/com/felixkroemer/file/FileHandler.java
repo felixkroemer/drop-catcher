@@ -85,7 +85,7 @@ public class FileHandler {
     try {
       var outputDir = configurationManager.getOutputDir();
       Path outputPath = outputDir.resolve(newFileName);
-      Files.copy(inputFilePath, outputPath, StandardCopyOption.REPLACE_EXISTING);
+      Files.move(inputFilePath, outputPath, StandardCopyOption.REPLACE_EXISTING);
     } catch (Exception e) {
       throw new FileMoveException(
           "Failed to copy file to the output directory " + inputFilePath, e);

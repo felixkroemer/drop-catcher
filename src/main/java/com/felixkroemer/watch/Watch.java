@@ -2,10 +2,11 @@ package com.felixkroemer.watch;
 
 import com.felixkroemer.config.ConfigurationManager;
 import com.felixkroemer.file.FileHandler;
+import lombok.extern.slf4j.Slf4j;
+
+import javax.inject.Inject;
 import java.io.IOException;
 import java.nio.file.*;
-import javax.inject.Inject;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class Watch {
@@ -65,7 +66,7 @@ public class Watch {
           try {
             fileHandler.handle(inputDir.resolve(filename));
           } catch (Exception e) {
-            log.error("Failed to process file {}", filename);
+            log.error("Failed to process file {}", filename, e);
           }
         }
       }
