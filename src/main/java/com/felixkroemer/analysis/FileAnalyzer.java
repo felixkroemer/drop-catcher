@@ -1,6 +1,6 @@
-package com.felixkroemer.analyzer;
+package com.felixkroemer.analysis;
 
-import com.felixkroemer.analyzer.result.AnalysisResult;
+import com.felixkroemer.analysis.result.AnalysisResult;
 import java.io.File;
 
 public interface FileAnalyzer {

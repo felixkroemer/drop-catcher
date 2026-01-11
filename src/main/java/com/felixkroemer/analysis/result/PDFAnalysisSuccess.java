@@ -1,4 +1,4 @@
-package com.felixkroemer.analyzer.result;
+package com.felixkroemer.analysis.result;
 
 import java.time.LocalDateTime;
 

@@ -44,9 +44,14 @@ public class DaggerModule {
 
       configuration.setProperty("hibernate.connection.driver_class", "org.sqlite.JDBC");
       configuration.setProperty(
-          "hibernate.connection.url", "jdbc:sqlite:" + configDir + "/sqlite.db");
+          "hibernate.connection.url", "jdbc:sqlite:" + configDir + "/sqlite.db?journal_mode=WAL");
       configuration.setProperty(
           "hibernate.dialect", "org.hibernate.community.dialect.SQLiteDialect");
+      configuration.setProperty(
+          "hibernate.physical_naming_strategy",
+          "org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy");
+
+      configuration.addAnnotatedClass(Class.forName("com.felixkroemer.file.FileMoveEntity"));
 
       // configuration.setProperty("hibernate.show_sql", "true");
       // configuration.setProperty("hibernate.format_sql", "true");

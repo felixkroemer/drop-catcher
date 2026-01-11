@@ -1,4 +1,4 @@
-package com.felixkroemer.analyzer.ai;
+package com.felixkroemer.analysis.ai;
 
 import static com.felixkroemer.config.ConfigurationManager.LLM_MODEL;
 

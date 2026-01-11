@@ -1,23 +1,28 @@
 package com.felixkroemer.file;
 
-import com.felixkroemer.analyzer.FileAnalyzer;
-import com.felixkroemer.analyzer.PDFAnalyzer;
-import com.felixkroemer.analyzer.result.AnalysisFailure;
-import com.felixkroemer.analyzer.result.AnalysisResult;
-import com.felixkroemer.analyzer.result.AnalysisSuccess;
+import com.felixkroemer.analysis.FileAnalyzer;
+import com.felixkroemer.analysis.PDFAnalyzer;
+import com.felixkroemer.analysis.result.AnalysisFailure;
+import com.felixkroemer.analysis.result.AnalysisIncomplete;
+import com.felixkroemer.analysis.result.AnalysisResult;
+import com.felixkroemer.analysis.result.AnalysisSuccess;
+import com.felixkroemer.common.BaseException;
+import com.felixkroemer.common.ErrorCode;
 import com.felixkroemer.config.ConfigurationManager;
 import com.felixkroemer.file.error.FileHandlingFailedException;
 import com.felixkroemer.file.error.FileMoveException;
+import com.felixkroemer.file.error.FileMoveStatus;
 import com.felixkroemer.file.error.StabilityChecksExceededException;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.SessionFactory;
 import org.jspecify.annotations.NonNull;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
@@ -45,18 +50,86 @@ public class FileHandler {
   }
 
   public void handle(Path inputFilePath) {
-    waitForFileStability(inputFilePath);
 
-    String extension = extractFileExtension(inputFilePath);
-    Optional<AnalysisResult> analysisResult = analyzeFile(inputFilePath, extension);
+    FileMoveEntity entity;
+    try {
+      entity = persistPendingEntity(inputFilePath);
+    } catch (Exception e) {
+      log.error("Failed to persist pending entity", e);
+      return;
+    }
 
-    analysisResult.ifPresent(
-        result -> {
-          switch (result) {
-            case AnalysisSuccess success -> moveFile(success.getAnalyzedName(), inputFilePath);
-            case AnalysisFailure failure ->
+    try {
+      waitForFileStability(inputFilePath);
+
+      String extension = extractFileExtension(inputFilePath);
+      Optional<AnalysisResult> analysisResult = analyzeFile(inputFilePath, extension);
+
+      analysisResult.ifPresentOrElse(
+          result -> {
+            switch (result) {
+              case AnalysisSuccess success -> {
+                var outputDir = configurationManager.getOutputDir();
+                moveFile(success.getAnalyzedName(), inputFilePath, outputDir);
+                entity.setStatus(FileMoveStatus.SUCCEEDED);
+                entity.setMoveCompletedAt(LocalDateTime.now());
+                entity.setTargetDirectory(outputDir.toString());
+                entity.setTargetFileName(success.getAnalyzedName());
+              }
+              case AnalysisIncomplete incomplete -> {
+                log.info("Analysis was incomplete: {}", incomplete.message());
+                entity.setErrorMessage(incomplete.message());
+                entity.setErrorCode(ErrorCode.ANALYSIS_INCOMPLETE);
+                entity.setStatus(FileMoveStatus.MOVE_FAILED);
+              }
+              case AnalysisFailure failure -> {
                 log.error("File analysis failed: {}", failure.reason(), failure.cause());
-          }
+                entity.setErrorMessage(failure.reason());
+                entity.setErrorCode(failure.code());
+                entity.setStatus(FileMoveStatus.MOVE_FAILED);
+              }
+            }
+          },
+          () -> {
+            entity.setErrorMessage("No analyzer for extension: " + extension);
+            entity.setErrorCode(ErrorCode.NO_ANALYZER_AVAILABLE);
+            entity.setStatus(FileMoveStatus.MOVE_FAILED);
+          });
+    } catch (BaseException e) {
+      entity.setErrorCode(e.getCode());
+      entity.setErrorMessage(e.getMessage());
+      entity.setStatus(FileMoveStatus.MOVE_FAILED);
+      throw e;
+    } catch (Exception e) {
+      entity.setErrorMessage(e.getMessage());
+      entity.setStatus(FileMoveStatus.MOVE_FAILED_UNEXPECTED_ERROR);
+      throw e;
+    } finally {
+      sessionFactory.inTransaction((session) -> session.merge(entity));
+    }
+  }
+
+  private FileMoveEntity persistPendingEntity(Path inputFilePath) {
+    BasicFileAttributes attrs;
+    try {
+      attrs = Files.readAttributes(inputFilePath, BasicFileAttributes.class);
+    } catch (Exception e) {
+      log.error("Could not retrieve file attributes: {}", inputFilePath, e);
+      throw new RuntimeException(e);
+    }
+    FileMoveEntity entity =
+        FileMoveEntity.builder()
+            .sourceDirectory(inputFilePath.getParent().toString())
+            .sourceFileName(inputFilePath.getFileName().toString())
+            .fileSize(attrs.size())
+            .fileHash("TODO")
+            .status(FileMoveStatus.PENDING)
+            .createdAt(LocalDateTime.now())
+            .build();
+    return sessionFactory.fromTransaction(
+        (session) -> {
+          session.persist(entity);
+          return entity;
         });
   }
 
@@ -81,9 +154,8 @@ public class FileHandler {
     return extension;
   }
 
-  private void moveFile(String newFileName, Path inputFilePath) {
+  private void moveFile(String newFileName, Path inputFilePath, Path outputDir) {
     try {
-      var outputDir = configurationManager.getOutputDir();
       Path outputPath = outputDir.resolve(newFileName);
       Files.move(inputFilePath, outputPath, StandardCopyOption.REPLACE_EXISTING);
     } catch (Exception e) {
@@ -118,13 +190,12 @@ public class FileHandler {
         totalChecks++;
         log.info("Sleep with interval {}", currentInterval);
         Thread.sleep(currentInterval);
-      } catch (InterruptedException e) {
-        Thread.currentThread().interrupt(); // Restore interrupt status
+      } catch (Exception e) {
+        if (e instanceof InterruptedException) {
+          Thread.currentThread().interrupt();
+        }
         throw new FileHandlingFailedException(
-            "File stability check interrupted for: {}", inputFilePath, e);
-      } catch (IOException e) {
-        throw new FileHandlingFailedException(
-            "File stability check interrupted for: {}", inputFilePath, e);
+            "Exception during file stability check for file: {}", inputFilePath, e);
       }
     }
     log.info("File stable: {}", inputFilePath);
