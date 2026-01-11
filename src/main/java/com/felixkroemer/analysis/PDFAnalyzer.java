@@ -32,7 +32,7 @@ public class PDFAnalyzer implements FileAnalyzer {
     try (var is = new FileInputStream(f)) {
       PdfReader reader = new PdfReader(is);
       var analyzableContent = getContentForNameAnalysis(reader);
-      if(analyzableContent.isEmpty()) {
+      if (analyzableContent.isEmpty()) {
         return new AnalysisIncomplete("PDF contains no text to analyze: " + f.getAbsolutePath());
       }
       var analyzedFileName = oaiService.analyzeFileName(analyzableContent.get());
@@ -55,6 +55,6 @@ public class PDFAnalyzer implements FileAnalyzer {
   private Optional<String> getContentForNameAnalysis(PdfReader reader) throws IOException {
     PdfTextExtractor pdfTextExtractor = new PdfTextExtractor(reader);
     var text = pdfTextExtractor.getTextFromPage(1);
-    return Optional.of(text).filter(String::isBlank);
+    return Optional.of(text).filter(s -> !s.isBlank());
   }
 }
